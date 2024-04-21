@@ -1,0 +1,260 @@
+/* form */
+.form-container {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    padding: var(--base);
+    width: 100%;
+    background-color: var(--color-gray-100);
+}
+
+.form-sub-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.form-block {
+    width: 100%;
+    max-width: 968px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.form-group-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group-sub-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.section-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin: 40px 0;
+}
+
+
+/* card */
+.cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: hidden;
+    overflow-y: auto;
+    height: 50vh;
+}
+
+.card {
+    display: flex;
+    background-color: var(--color-gray-500);
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 100%;
+    transition: all 0.3s ease-in-out;
+}
+
+.card:hover {
+    color: var(--color-primary-light);
+    background-color: var(--color-primary-dark);
+}
+
+.card button {
+    background: none;
+    border: none;
+    font-size: var(--text-base);
+    color: #333;
+    cursor: pointer;
+}
+
+.card label {
+    display: block;
+    width: 100%;
+    padding: 15px;
+}
+
+
+
+
+/* lot-number */
+#otp-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+#otp-inputs input[type="text"] {
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    font-size: 24px;
+    border: 2px solid #ccc;
+    margin-left: 0;
+    background-color: var(--color-primary-light);
+}
+
+#otp-inputs input[type="text"]:focus {
+    border-color: #007bff;
+    outline: none;
+    z-index: 1;
+    position: relative;
+    border-left: 2px solid #007bff;
+}
+
+.error-message {
+    color: red;
+    font-size: 12px;
+    display: none;
+}
+
+
+
+
+
+/* button */
+#clear-button,
+#next-button {
+    display: block;
+    width: 100px;
+    padding: 10px;
+    margin: 20px auto;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+#clear-button {
+    background-color: #007bff;
+}
+
+#clear-button:hover {
+    background-color: #0056b3;
+}
+
+#next-button {
+    background-color: #28a745;
+}
+
+#next-button:hover {
+    background-color: #218838;
+}
+
+#inquiry-content {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.input-group input[type="text"],
+.input-group input[type="email"],
+.input-group input[type="tel"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.input-group input[type="radio"] {
+    margin-right: 5px;
+}
+
+.form-container button[type="submit"] {
+    display: block;
+    width: 100px;
+    padding: 10px;
+    margin-top: 20px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form-container button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.form-container button.back-button,
+.form-container button[type="button"] {
+    display: inline-block;
+    width: auto;
+    padding: 8px 15px;
+    margin-right: 10px;
+    color: #333;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form-container button.back-button:hover,
+.form-container button[type="button"]:hover {
+    background-color: #ddd;
+}
+
+
+
+.card {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+    background-color: #f9f9f9;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+
+/* preview */
+#preview-area {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 20px;
+    justify-content: flex-start;
+    border-radius: 5px;
+}
+
+#preview-area h2 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+#preview-area p {
+    color: #666;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+#preview-area p:last-child {
+    margin-bottom: 0;
+}
+
+/* formーblockの表示処理 */
+
+.hide {
+    display: none;
+}
