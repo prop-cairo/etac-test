@@ -397,7 +397,7 @@ main {
 .top-introduction-flex-item1 h2 {
     font-size: var(--text-xlarge);
     font-weight: bold;
-    line-height: 3rem;
+    line-height: 1.5;
 }
 
 .top-introduction-flex-item2 p {
