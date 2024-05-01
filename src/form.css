@@ -219,6 +219,11 @@
 }
 
 
+.form-group-container > label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
 
 .card {
     border: 2px solid #ddd;
@@ -240,7 +245,10 @@
 
 #preview-area h2 {
     color: #333;
-    margin-bottom: 15px;
+    margin: 40px 0;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
 }
 
 #preview-area p {

@@ -233,6 +233,146 @@ const Form = () => {
     setResponseMethod("");
   }, []);
 
+  useEffect(() => {
+    document.addEventListener("DOMContentLoaded", function () {
+      const fields = document.querySelectorAll(
+        '#otp-inputs input[type="text"]'
+      );
+      const errorMessage = document.getElementById("error-message");
+
+      // 全角英数字を半角に変換する共通の関数
+      function toHalfWidth(str) {
+        return str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function (s) {
+          return String.fromCharCode(s.charCodeAt(0) - 0xfee0);
+        });
+      }
+
+      fields.forEach((field, index) => {
+        // ペーストイベントの処理
+        field.addEventListener("paste", (e) => {
+          e.preventDefault();
+          const pasteData = e.clipboardData.getData("text");
+          const convertedData = toHalfWidth(pasteData);
+
+          // ペーストデータをフィールドに分散して配置
+          for (
+            let i = 0;
+            i < convertedData.length && index + i < fields.length;
+            i++
+          ) {
+            fields[index + i].value = convertedData.charAt(i);
+            if (i + 1 < convertedData.length && index + i + 1 < fields.length) {
+              fields[index + i + 1].focus();
+            }
+          }
+        });
+
+        // 入力イベント
+        field.addEventListener("input", (e) => {
+          // ここでも全角を半角に変換し、入力内容を更新
+          const convertedValue = toHalfWidth(field.value);
+          field.value = convertedValue;
+
+          if (
+            field.value.match(/^[a-zA-Z0-9]*$/) &&
+            field.value.length === field.maxLength
+          ) {
+            if (index < fields.length - 1) {
+              fields[index + 1].focus();
+            }
+            errorMessage.style.display = "none";
+          } else if (!field.value.match(/^[a-zA-Z0-9]*$/)) {
+            errorMessage.style.display = "block";
+            errorMessage.textContent = "入力は英数字のみです。";
+          }
+        });
+
+        // キーダウンイベントでナビゲーションを管理
+        field.addEventListener("keydown", (e) => {
+          handleNavigation(e, field, index);
+        });
+      });
+
+      function handleNavigation(e, field, index) {
+        switch (e.key) {
+          case "ArrowRight":
+            if (index < fields.length - 1) fields[index + 1].focus();
+            e.preventDefault();
+            break;
+          case "ArrowLeft":
+            if (index > 0) fields[index - 1].focus();
+            e.preventDefault();
+            break;
+          case "Backspace":
+          case "Delete":
+            if (field.value.length === 0 && index > 0) {
+              fields[index - 1].focus();
+              fields[index - 1].value = "";
+              e.preventDefault();
+            }
+            break;
+        }
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const fields = document.querySelectorAll(
+        '#otp-inputs input[type="text"]'
+      );
+
+      fields.forEach((field, index) => {
+        field.addEventListener("input", () => {
+          // 英数字以外の文字が入力された場合のチェック
+          if (!field.value.match(/^[a-zA-Z0-9]*$/)) {
+            // エラーメッセージを表示
+            document.getElementById(`error-${index + 1}`).style.display =
+              "block";
+            document.getElementById(`error-${index + 1}`).textContent =
+              "英数字のみ入力してください。";
+          } else {
+            // エラーメッセージを隠す
+            document.getElementById(`error-${index + 1}`).style.display =
+              "none";
+          }
+        });
+      });
+    });
+
+    // ヴァリデーションの処理 //////////////////////////////////////////////////////////////////
+    document.addEventListener("DOMContentLoaded", function () {
+      let form = document.getElementById("customer-info-form");
+      form.addEventListener("submit", function (e) {
+        // 入力値の取得
+        let name = document.getElementById("name").value;
+        let organization = document.getElementById("organization").value;
+        let email = document.getElementById("email").value;
+        let confirmEmail = document.getElementById("confirm-email").value;
+        let phone = document.getElementById("phone").value;
+
+        // 簡易バリデーションチェック
+        if (!name || !organization || !email || !confirmEmail || !phone) {
+          alert("全ての項目を入力してください。");
+          e.preventDefault(); // フォームの送信を停止
+          return;
+        }
+
+        // メールアドレスが一致するかチェック
+        if (email !== confirmEmail) {
+          alert("メールアドレスが一致しません。");
+          e.preventDefault(); // フォームの送信を停止
+          return;
+        }
+
+        // 電話番号の形式チェック（10桁または11桁の数字）
+        let phonePattern = /^\d{10,11}$/;
+        if (!phonePattern.test(phone)) {
+          alert("電話番号は10桁または11桁の数字で入力してください。");
+          e.preventDefault(); // フォームの送信を停止
+          return;
+        }
+      });
+    });
+  }, []);
 
   const handleCategoryChange = (section) => {
     setActiveSection(section);
@@ -337,6 +477,90 @@ const Form = () => {
                 </button>
               </div>
             )}
+            {/* Level 3: Product Selection */}
+            {activeSection === "productLotNum" && (
+              <div className="form-block" id={"product-lot-num"}>
+                <h2 className="section-title">
+                  お問い合わせ製品のロットNo.を入力してください。
+                </h2>
+                <div className="input-group" id="otp-inputs">
+                  <input
+                    type="text"
+                    id="digit-1"
+                    name="digit-1"
+                    maxLength="1"
+                    required
+                  />
+                  <input
+                    type="text"
+                    id="digit-2"
+                    name="digit-2"
+                    maxLength="1"
+                    required
+                  />
+                  <input
+                    type="text"
+                    id="digit-3"
+                    name="digit-3"
+                    maxLength="1"
+                    required
+                  />
+                  <input
+                    type="text"
+                    id="digit-4"
+                    name="digit-4"
+                    maxLength="1"
+                    required
+                  />
+                  <input
+                    type="text"
+                    id="digit-5"
+                    name="digit-5"
+                    maxLength="1"
+                    required
+                  />
+                  <input
+                    type="text"
+                    id="digit-6"
+                    name="digit-6"
+                    maxLength="1"
+                    required
+                  />
+                  <input
+                    type="text"
+                    id="digit-7"
+                    name="digit-7"
+                    maxLength="1"
+                    required
+                  />
+                  <input
+                    type="text"
+                    id="digit-8"
+                    name="digit-8"
+                    maxLength="1"
+                    required
+                  />
+                  <input
+                    type="text"
+                    id="digit-9"
+                    name="digit-9"
+                    maxLength="1"
+                    required
+                  />
+                </div>
+                <div id="error-message"></div>
+                <button
+                  id="next-button"
+                  type="button"
+                  onClick={() => setActiveSection("inquiryTextarea")}
+                >
+                  次へ
+                </button>
+                <button className="back-button" onClick={goBack}>
+                  戻る
+                </button>
+              </div>
+            )}
 
             {/* Level 4: Inquiry Textarea */}
             {activeSection === "inquiryTextarea" && (
@@ -431,7 +655,7 @@ const Form = () => {
                     <div className="form-group-sub-container">
                       <div
                         className="card"
-                        // onClick={toggleDisplay('email-response')}
+                        onClick={() => setResponseMethod("メール")}
                       >
                         <input
                           type="radio"
@@ -444,7 +668,7 @@ const Form = () => {
                       </div>
                       <div
                         className="card"
-                        // onClick={toggleDisplay('phone-response')}
+                        onClick={() => setResponseMethod("電話")}
                       >
                         <input
                           type="radio"
@@ -460,7 +684,6 @@ const Form = () => {
                 </form>
               </div>
             )}
-
           </div>
           <div id="preview-area" className="form-sub-container">
             <h2>プレビュー</h2>
@@ -472,11 +695,13 @@ const Form = () => {
                 製品カテゴリ：{productCategory}
               </p>
             )}
-            {inquiryContent && (
-              <p id="preview-inquiry-content">{inquiryContent}</p>
-            )}
             {productSelection && (
               <p id="preview-product-selection">製品：{productSelection}</p>
+            )}
+            {inquiryContent && (
+              <p id="preview-inquiry-content">
+                お問い合わせ内容：{inquiryContent}
+              </p>
             )}
             <p id="preview-lot-number"></p>
             {name ||
