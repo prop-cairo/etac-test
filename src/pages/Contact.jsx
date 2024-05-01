@@ -1,4 +1,5 @@
 import Layout from "@/components/Layout";
+import { Link } from "react-router-dom";
 
 const Contact = () => {
   return (
@@ -36,9 +37,9 @@ const Contact = () => {
             <h3 className="contact-h3">お問い合わせはこちら</h3>
             <p className="contact-phone-number">03-3295-8681</p>
             <div className="contact-button">
-              <a href="/form" className="button">
+              <Link to="/form" className="button">
                 お問い合わせフォーム
-              </a>
+              </Link>
             </div>
             <p className="contact-meta-text">
               修理・点検・校正やリセール製品に関するお問い合わせは、事前に9桁のロットNo.をお控えいただくとスムーズにご案内できます。
