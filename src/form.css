@@ -184,7 +184,7 @@
     margin-right: 5px;
 }
 
-.form-container button[type="submit"] {
+button[type="submit"] {
     display: block;
     width: 100px;
     padding: 10px;
@@ -196,12 +196,12 @@
     cursor: pointer;
 }
 
-.form-container button[type="submit"]:hover {
+button[type="submit"]:hover {
     background-color: #0056b3;
 }
 
-.form-container button.back-button,
-.form-container button[type="button"] {
+button.back-button,
+button[type="button"] {
     display: inline-block;
     width: auto;
     padding: 8px 15px;
@@ -213,17 +213,12 @@
     cursor: pointer;
 }
 
-.form-container button.back-button:hover,
-.form-container button[type="button"]:hover {
+button.back-button:hover,
+button[type="button"]:hover {
     background-color: #ddd;
 }
 
 
-.form-group-container > label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
 
 .card {
     border: 2px solid #ddd;
@@ -239,15 +234,14 @@
     background-color: #f9f9f9;
     border: 1px solid #ccc;
     padding: 20px;
-    justify-content: flex-start;
     border-radius: 5px;
 }
 
 #preview-area h2 {
     color: #333;
-    margin: 40px 0;
+    margin: 15px;
     text-align: center;
-    font-size: 24px;
+    font-size: var(--text-large);
     font-weight: bold;
 }
 

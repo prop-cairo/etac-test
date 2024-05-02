@@ -1,12 +1,15 @@
 import Layout from "@/components/Layout";
 import { Link } from "react-router-dom";
+import "@/styles/Contact.scss";
+import useSlideUp from "@/hooks/useSlideup";
 
 const Contact = () => {
+  const slideUpRef = useSlideUp();
   return (
     <Layout>
       <div className="container">
         <div className="title-container">
-          <h1 className="title text-animate">お問い合わせ</h1>
+          <h1 className="etac-h1">お問い合わせ</h1>
         </div>
 
         <div className="contact-container">
@@ -36,7 +39,7 @@ const Contact = () => {
           <div className="contact-sub-container-2">
             <h3 className="contact-h3">お問い合わせはこちら</h3>
             <p className="contact-phone-number">03-3295-8681</p>
-            <div className="contact-button">
+            <div className="contact-button slide-up" ref={slideUpRef}>
               <Link to="/form" className="button">
                 お問い合わせフォーム
               </Link>

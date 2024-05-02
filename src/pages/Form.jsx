@@ -686,7 +686,7 @@ const Form = () => {
             )}
           </div>
           <div id="preview-area" className="form-sub-container">
-            <h2>プレビュー</h2>
+            <h2>お問い合わせ内容</h2>
             {category && (
               <p id="preview-category">お問い合わせの種別：{category}</p>
             )}

@@ -4,6 +4,7 @@ import TopNote from "@/components/TopNote";
 import { WP_API_BASE_URL } from "@/settings/wordPress";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import "@/styles/Home.scss";
 
 const Home = () => {
   const { data } = useQuery({
@@ -18,8 +19,9 @@ const Home = () => {
 
   return (
     <Layout>
-      <Slide />
-      {/* <section className="top-introduction">
+      {/* <div className="top-container"> */}
+        <Slide />
+        {/* <section className="top-introduction">
         <div className="top-introduction-container">
           <div className="top-introduction-flex-item1">
             <h2>信頼性試験を支える</h2>
@@ -45,11 +47,12 @@ const Home = () => {
           </div>
         </div>
       </section> */}
-      <section
-        className="top-introduction"
-        dangerouslySetInnerHTML={{ __html: data?.content?.rendered }}
-      />
-      <TopNote />
+        <section
+          className="top-introduction"
+          dangerouslySetInnerHTML={{ __html: data?.content?.rendered }}
+        />
+        <TopNote />
+      {/* </div> */}
     </Layout>
   );
 };

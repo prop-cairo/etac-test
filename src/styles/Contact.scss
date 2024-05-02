@@ -1,0 +1,96 @@
+.contact-container{
+    display: flex;
+    width: 100%;
+    padding: var(--base);
+}
+
+.contact-sub-container{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.contact-sub-container-2{
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: center;
+    width: 100%;
+}
+
+@media (max-width: 1068px) {
+    .contact-container{
+        display: flex;
+        justify-content: center;
+        flex-direction:column;
+        width: 100%;
+        padding: var(--xxsmall);
+    }
+    .contact-sub-container{
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+}
+
+.contact-list-container {
+    display: flex;
+    gap: 16px;
+    padding: 0 var(--small);
+}
+
+.contact-container ul li {
+    position: relative;
+    padding-left: 40px;
+    font-size: var(--text-base);
+    line-height: 2;
+}
+
+.contact-container ul li::before {
+    content: url('/images/check.svg'); /* SVGファイルへのパスを指定 */
+    position: absolute; /* beforeを絶対位置に設定 */
+    left: 0; /* 左からの位置 */
+    top: 50%; /* 上からの位置を親要素の50%に設定 */
+    transform: translateY(-50%); /* Y軸方向に自身の高さの50%分移動して中央に来るよう調整 */
+    width: 32px; /* アイコンの幅 */
+    height: 31px; /* アイコンの高さ */
+  }
+
+.contact-h2 {
+    font-size: var(--text-large);
+    font-weight: bold;
+    padding: var(--small);
+    line-height: 1.5;
+}
+.contact-h3 {
+    margin-top: var(--base);
+    padding: var(--xxsmall) var(--xsmall);
+    font-size: var(--text-small);
+    font-weight: bold;
+    border: 1px solid var(--color-gray-1000);
+    border-radius: 40px;
+}
+
+.contact-phone-number {
+    font-size: var(--text-xxxlarge);
+    font-weight: bold;
+    margin: var(--small) 0;
+}
+
+.contact-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100px;
+    padding: 0 var(--base);
+}
+
+.contact-meta-text {
+    margin-top: var(--xxsmall);
+    padding: var(--xxsmall) var(--small);
+    font-size: var(--text-small);
+    line-height: 1.5;
+    color: var(--color-gray-800);
+}
+ 

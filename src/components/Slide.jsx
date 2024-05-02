@@ -1,7 +1,35 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Splide from "@splidejs/splide";
+import SlideUpButton from "./SlideUpButton";
+
+const slidesData = [
+  {
+    videoSrc: "/images/product_01.mp4",
+    imgSrc: "https://placehold.jp/eeeeee/ffffff/1880x1880.png",
+    altText: "Slide 1",
+    link: "#link1",
+    label: "製品ページを見る",
+  },
+  {
+    videoSrc: "", // 空文字列の場合はビデオが存在しないと仮定
+    imgSrc: "/images/resale.png",
+    altText: "Slide 2",
+    link: "#link2",
+    label: "リセール製品を見る",
+  },
+  {
+    videoSrc: "", // 空文字列の場合はビデオが存在しないと仮定
+    imgSrc: "/images/refrigerant.png",
+    altText: "Slide 3",
+    link: "#link3",
+    label: "特設ページを見る",
+  },
+];
 
 const Slide = () => {
+  const splideRef = useRef(null);
+  const videoRefs = useRef([]);
+
   useEffect(() => {
     const options = {
       perMove: 1,
@@ -15,70 +43,65 @@ const Slide = () => {
       speed: 1000,
       interval: 5000,
       easing: "cubic-bezier(0.65, 0, 0.35, 1)",
-      gap: 8,
+      gap: 40,
       padding: "calc(12vw - 24px)",
     };
-    new Splide(".splide", options).mount();
+    const splide = new Splide(".splide", options);
+    splide.mount();
+    splideRef.current = splide;
+  }, []);
+
+  // 自動再生用のIntersectionObserver設定
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const videoIndex = parseInt(
+            entry.target.getAttribute("data-index"),
+            10
+          );
+          const video = videoRefs.current[videoIndex];
+          if (video && entry.isIntersecting && entry.intersectionRatio === 1) {
+            video.play();
+          }
+        });
+      },
+      { threshold: 1.0 }
+    );
+
+    videoRefs.current.forEach((video) => {
+      if (video) observer.observe(video);
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <section className="splide" aria-label="top-slide">
+    <section className="splide" id="top-slider" aria-label="top-slide">
       <div className="splide__track">
-        <ul className="splide__list">
-          <li className="splide__slide">
-            <div className="slide-content">
-              <picture>
-                <source
-                  media="(min-width: 501px)"
-                  srcSet="https://placehold.jp/e0e0e0/ffffff/1138x640.png"
-                />
-                <source
-                  media="(max-width: 500px)"
-                  srcSet="https://placehold.jp/e0e0e0/ffffff/360x600.png"
-                />
-                <img src="https://placehold.jp/1138x640.png" alt="Slide 1" />
-              </picture>
-              <div className="slide-button">
-                <a href="">全ての製品を見る</a>
+        <ul className="splide__list top-slider-list">
+          {slidesData.map((slide, index) => (
+            <li className="splide__slide top-slider-list-item" key={index}>
+              <div className="top-slider-list-item-container">
+                {slide.videoSrc ? (
+                  <video
+                    loop
+                    muted
+                    playsInline
+                    ref={(el) => (videoRefs.current[index] = el)}
+                    data-index={index}
+                  >
+                    <source src={slide.videoSrc} type="video/mp4" />
+                  </video>
+                ) : (
+                  <picture>
+                    <img src={slide.imgSrc} alt={slide.altText} />
+                  </picture>
+                )}
               </div>
-            </div>
-          </li>
-          <li className="splide__slide">
-            <div className="slide-content">
-              <picture>
-                <source
-                  media="(min-width: 501px)"
-                  srcSet="https://placehold.jp/bdbdbd/ffffff/1138x640.png"
-                />
-                <source
-                  media="(max-width: 500px)"
-                  srcSet="https://placehold.jp/bdbdbd/ffffff/360x600.png"
-                />
-                <img src="https://placehold.jp/1138x640.png" alt="Slide 2" />
-              </picture>
-              <div className="slide-button">
-                <a href="">全ての製品を見る</a>
-              </div>
-            </div>
-          </li>
-          <li className="splide__slide">
-            <div className="slide-content">
-              <picture>
-                <source
-                  media="(min-width: 501px)"
-                  srcSet="https://placehold.jp/eeeeee/ffffff/1138x640.png"
-                />
-                <source
-                  media="(max-width: 500px)"
-                  srcSet="https://placehold.jp/eeeeee/ffffff/360x600.png"
-                />
-                <img src="https://placehold.jp/1138x640.png" alt="Slide 3" />
-              </picture>
-              <div className="slide-button">
-                <a href="">全ての製品を見る</a>
-              </div>
-            </div>
-          </li>
+              <SlideUpButton link={slide.link}>製品ページを見る</SlideUpButton>
+            </li>
+          ))}
         </ul>
       </div>
     </section>
