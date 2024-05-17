@@ -11,17 +11,7 @@ const Form = () => {
   const search = useLocation().search;
   const [activeSection, setActiveSection] = useState("");
   const [prevSection, setPrevSection] = useState("");
-  const [category, setCategory] = useState("");
-  const [productCategory, setProductCategory] = useState("");
-  const [productSelection, setProductSelection] = useState("");
-  const [lotNumber, setLotNumber] = useState("");
-  const [inquiryContent, setInquiryContent] = useState("");
-  const [name, setName] = useState("");
-  const [organization, setOrganization] = useState("");
-  const [email, setEmail] = useState("");
-  const [emailConf, setEmailConf] = useState("");
-  const [phone, setPhone] = useState("");
-  const [responseMethod, setResponseMethod] = useState("");
+  const [formData, setFormData] = useState([]);
 
   const { data } = useQuery({
     queryKey: ["form"],
@@ -30,6 +20,35 @@ const Form = () => {
       return response.data;
     },
   });
+
+  const extractFormNames = (data) => {
+    const formNames = {};
+
+    const searchForKey = (obj) => {
+      for (const key in obj) {
+        if (typeof obj[key] === "object" && obj[key] !== null) {
+          searchForKey(obj[key]);
+        } else if (key === "formName" && obj[key]) {
+          formNames[obj[key]] = ""; // formNameの値をキーとして格納
+        }
+      }
+    };
+
+    data.forEach((item) => {
+      searchForKey(item);
+    });
+
+    return formNames;
+  };
+
+  useEffect(() => {
+    if (data) {
+      const acf = data[0].acf;
+      const acfValues = Object.values(acf);
+      const formNames = extractFormNames(acfValues);
+      setFormData(formNames);
+    }
+  }, [data]);
 
   // 第一階層
   const topSections = {
@@ -229,20 +248,11 @@ const Form = () => {
     const query = new URLSearchParams(search);
     // 初期化
     setActiveSection(query.get("section") || "");
-    setCategory(
-      topSections.options.find((o) => o.label === query.get("category"))
-        ?.label || ""
-    );
-    setProductCategory(query.get("productCategory") || "");
-    setProductSelection(query.get("productSelection") || "");
-    setLotNumber(query.get("lotNumber") || "");
-    setInquiryContent(query.get("inquiryContent") || "");
-    setName("");
-    setOrganization("");
-    setEmail("");
-    setEmailConf("");
-    setPhone("");
-    setResponseMethod("");
+    Object.entries(query).forEach(([key, value]) => {
+      if (value) {
+        setFormData({ ...formData, [key]: value });
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -391,13 +401,16 @@ const Form = () => {
     setActiveSection(section);
   };
 
-  const goBack = () => {
-    setActiveSection(prevSection || ""); // セクションをクリアして戻る
-    setPrevSection(""); // 戻るボタンを非表示にする
+  const goBack = async () => {
+    setActiveSection(prevSection || "");
+    setPrevSection("");
   };
 
-  const handleClick = (item) => {
+  const handleClick = async (item) => {
     // setCurrentFormName(item.formName);
+    if (item.formName) {
+      setFormData({ ...formData, [item.formName]: item.label });
+    }
     handleCategoryChange(item.nextField);
   };
   const renderFormLeft = () => {
@@ -418,6 +431,13 @@ const Form = () => {
         <div className="form-block" id="free-text">
           <h2 className="section-title">お問い合わせ・ご相談内容</h2>
           {renderFormOptions(data[0].acf.freeText)}
+        </div>
+      );
+    } else if (activeSection === "targetProduct") {
+      return (
+        <div className="form-block" id="target-product">
+          <h2 className="section-title">対象製品を教えてください。</h2>
+          {renderFormOptions(data[0].acf.targetProduct)}
         </div>
       );
     } else {
@@ -454,13 +474,17 @@ const Form = () => {
               <div className="input-group">
                 <textarea
                   id="inquiry-content"
-                  name="inquiry-content"
-                  value={inquiryContent}
+                  value={formData[item.formName]}
                   rows="5"
                   placeholder={`${
                     item.label ? item.label : item.nextField
                   }をご記入ください。`}
-                  onChange={(e) => setInquiryContent(e.target.value)}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      [item.formName]: e.target.value,
+                    })
+                  }
                 ></textarea>
               </div>
               <button
@@ -473,12 +497,113 @@ const Form = () => {
               <button
                 id="clear-textarea-button"
                 type="button"
-                onClick={() => setInquiryContent("")}
+                onClick={() =>
+                  setFormData({ ...formData, [item.formName]: "" })
+                }
               >
                 クリア
               </button>
             </>
           );
+        case "input-text":
+          return (
+            <>
+              <label>{item.label || ""}</label>
+              <div className="input-group">
+                <input
+                  key={item.label}
+                  type="text"
+                  value={formData[item.formName]}
+                  style={{
+                    backgroundColor: "white",
+                    margin: "20px auto",
+                  }}
+                  placeholder={`${
+                    item.label ? item.label : item.nextField
+                  }をご記入ください。`}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      [item.formName]: e.target.value,
+                    })
+                  }
+                ></input>
+              </div>
+            </>
+          );
+        case "input-lot-num":
+          return (
+            <>
+              <label>{item.label || ""}</label>
+              <div className="input-group" id="otp-inputs" key={item.label}>
+                <input
+                  type="text"
+                  id="digit-1"
+                  name="digit-1"
+                  maxLength="1"
+                  required
+                />
+                <input
+                  type="text"
+                  id="digit-2"
+                  name="digit-2"
+                  maxLength="1"
+                  required
+                />
+                <input
+                  type="text"
+                  id="digit-3"
+                  name="digit-3"
+                  maxLength="1"
+                  required
+                />
+                <input
+                  type="text"
+                  id="digit-4"
+                  name="digit-4"
+                  maxLength="1"
+                  required
+                />
+                <input
+                  type="text"
+                  id="digit-5"
+                  name="digit-5"
+                  maxLength="1"
+                  required
+                />
+                <input
+                  type="text"
+                  id="digit-6"
+                  name="digit-6"
+                  maxLength="1"
+                  required
+                />
+                <input
+                  type="text"
+                  id="digit-7"
+                  name="digit-7"
+                  maxLength="1"
+                  required
+                />
+                <input
+                  type="text"
+                  id="digit-8"
+                  name="digit-8"
+                  maxLength="1"
+                  required
+                />
+                <input
+                  type="text"
+                  id="digit-9"
+                  name="digit-9"
+                  maxLength="1"
+                  required
+                />
+              </div>
+            </>
+          );
+        default:
+          return <></>;
       }
     });
   };
@@ -789,42 +914,12 @@ const Form = () => {
           </div>
           <div id="preview-area" className="form-sub-container">
             <h2>お問い合わせ内容</h2>
-            {category && (
-              <p id="preview-category">お問い合わせの種別：{category}</p>
-            )}
-            {productCategory && (
-              <p id="preview-product-category">
-                製品カテゴリ：{productCategory}
-              </p>
-            )}
-            {productSelection && (
-              <p id="preview-product-selection">製品：{productSelection}</p>
-            )}
-            {inquiryContent && (
-              <p id="preview-inquiry-content">
-                お問い合わせ・ご相談内容：{inquiryContent}
-              </p>
-            )}
-            <p id="preview-lot-number"></p>
-            {name ||
-            organization ||
-            email ||
-            emailConf ||
-            phone ||
-            responseMethod ? (
-              <>
-                <p id="preview-customer-info">お客様情報</p>
-                {
-                  <>
-                    <p>お名前：{name || ""}</p>
-                    <p>会社・団体・所属等：{organization || ""}</p>
-                    <p>メールアドレス：{email || ""}</p>
-                    <p>電話番号：{phone || ""}</p>
-                    <p>ご回答の方法：{responseMethod || ""}</p>
-                  </>
-                }
-              </>
-            ) : null}
+            {formData &&
+              Object.entries(formData).map(([key, value]) => (
+                <p key={key}>
+                  {key}：{value}
+                </p>
+              ))}
           </div>
         </div>
       </div>
