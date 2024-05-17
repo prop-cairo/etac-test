@@ -480,6 +480,7 @@ const Form = () => {
                     item.label ? item.label : item.nextField
                   }をご記入ください。`}
                   onChange={(e) =>
+                    item.formName &&
                     setFormData({
                       ...formData,
                       [item.formName]: e.target.value,
@@ -522,6 +523,7 @@ const Form = () => {
                     item.label ? item.label : item.nextField
                   }をご記入ください。`}
                   onChange={(e) =>
+                    item.formName &&
                     setFormData({
                       ...formData,
                       [item.formName]: e.target.value,
