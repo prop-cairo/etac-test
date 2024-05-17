@@ -3,10 +3,14 @@ import Layout from "@/components/Layout";
 
 import "@/form.css";
 import { useLocation } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { WP_API_BASE_URL } from "@/settings/wordPress";
 
 const Form = () => {
   const search = useLocation().search;
   const [activeSection, setActiveSection] = useState("");
+  const [prevSection, setPrevSection] = useState("");
   const [category, setCategory] = useState("");
   const [productCategory, setProductCategory] = useState("");
   const [productSelection, setProductSelection] = useState("");
@@ -18,6 +22,14 @@ const Form = () => {
   const [emailConf, setEmailConf] = useState("");
   const [phone, setPhone] = useState("");
   const [responseMethod, setResponseMethod] = useState("");
+
+  const { data } = useQuery({
+    queryKey: ["form"],
+    queryFn: async () => {
+      const response = await axios.get(`${WP_API_BASE_URL}/wp-json/wp/v2/form`);
+      return response.data;
+    },
+  });
 
   // 第一階層
   const topSections = {
@@ -375,11 +387,100 @@ const Form = () => {
   }, []);
 
   const handleCategoryChange = (section) => {
+    setPrevSection(activeSection);
     setActiveSection(section);
   };
 
   const goBack = () => {
-    setActiveSection(""); // セクションをクリアして戻る
+    setActiveSection(prevSection || ""); // セクションをクリアして戻る
+    setPrevSection(""); // 戻るボタンを非表示にする
+  };
+
+  const handleClick = (item) => {
+    // setCurrentFormName(item.formName);
+    handleCategoryChange(item.nextField);
+  };
+  const renderFormLeft = () => {
+    if (!data) {
+      return;
+    }
+    if (!activeSection) {
+      return (
+        <div className="form-block" id={topSections.id}>
+          <h2 className="section-title">{topSections.label}</h2>
+          <div className="cards-container">
+            {renderFormOptions(data[0].acf.firstQuestion)}
+          </div>
+        </div>
+      );
+    } else if (activeSection === "freeText") {
+      return (
+        <div className="form-block" id="free-text">
+          <h2 className="section-title">お問い合わせ・ご相談内容</h2>
+          {renderFormOptions(data[0].acf.freeText)}
+        </div>
+      );
+    } else {
+      return (
+        <div className="form-block" id={topSections.id}>
+          <h2 className="section-title">{topSections.label}</h2>
+          <div className="cards-container">
+            {renderFormOptions(data[0].acf[`${activeSection}`])}
+          </div>
+          <button className="back-button" onClick={goBack}>
+            戻る
+          </button>
+        </div>
+      );
+    }
+  };
+
+  const renderFormOptions = (obj) => {
+    return Object.values(obj).map((item) => {
+      switch (item.formType) {
+        case "label":
+          return (
+            <div
+              key={item.nextField}
+              className="card"
+              onClick={() => handleClick(item)}
+            >
+              <label>{item.label ? item.label : item.nextField}</label>
+            </div>
+          );
+        case "input-text-multiline":
+          return (
+            <>
+              <div className="input-group">
+                <textarea
+                  id="inquiry-content"
+                  name="inquiry-content"
+                  value={inquiryContent}
+                  rows="5"
+                  placeholder={`${
+                    item.label ? item.label : item.nextField
+                  }をご記入ください。`}
+                  onChange={(e) => setInquiryContent(e.target.value)}
+                ></textarea>
+              </div>
+              <button
+                id="next-textarea-button"
+                type="button"
+                onClick={() => handleCategoryChange(item)}
+              >
+                次へ
+              </button>
+              <button
+                id="clear-textarea-button"
+                type="button"
+                onClick={() => setInquiryContent("")}
+              >
+                クリア
+              </button>
+            </>
+          );
+      }
+    });
   };
 
   return (
@@ -388,7 +489,7 @@ const Form = () => {
         <div className="form-container">
           <div className="form-sub-container">
             {/* Level 1: Inquiry Categories */}
-            {!activeSection && (
+            {/* {!activeSection && (
               <div className="form-block" id={topSections.id}>
                 <h2 className="section-title">{topSections.label}</h2>
                 <div className="cards-container">
@@ -412,10 +513,11 @@ const Form = () => {
                   ))}
                 </div>
               </div>
-            )}
+            )} */}
+            {renderFormLeft()}
 
             {/* Level 2 */}
-            {secondSections[activeSection] && (
+            {/* {secondSections[activeSection] && (
               <div className="form-block" id={secondSections[activeSection].id}>
                 <h2 className="section-title">
                   {secondSections[activeSection].label}
@@ -444,10 +546,10 @@ const Form = () => {
                   戻る
                 </button>
               </div>
-            )}
+            )} */}
 
             {/* Level 3: Product Selection */}
-            {thirdSections[activeSection] && (
+            {/* {thirdSections[activeSection] && (
               <div className="form-block" id={thirdSections[activeSection].id}>
                 <h2 className="section-title">
                   {thirdSections[activeSection].label}
@@ -476,9 +578,9 @@ const Form = () => {
                   戻る
                 </button>
               </div>
-            )}
+            )} */}
             {/* Level 3: Product Selection */}
-            {activeSection === "productLotNum" && (
+            {/* {activeSection === "productLotNum" && (
               <div className="form-block" id={"product-lot-num"}>
                 <h2 className="section-title">
                   お問い合わせ製品のロットNo.を入力してください。
@@ -560,10 +662,10 @@ const Form = () => {
                   戻る
                 </button>
               </div>
-            )}
+            )} */}
 
             {/* Level 4: Inquiry Textarea */}
-            {activeSection === "inquiryTextarea" && (
+            {/* {activeSection === "inquiryTextarea" && (
               <div className="form-block" id="inquiry-textarea">
                 <h2 className="section-title">お問い合わせ・ご相談内容</h2>
                 <div className="input-group">
@@ -591,10 +693,10 @@ const Form = () => {
                   クリア
                 </button>
               </div>
-            )}
+            )} */}
 
             {/* Level 5: Customer Info */}
-            {activeSection === "customerInfo" && (
+            {/* {activeSection === "customerInfo" && (
               <div className="form-block" id="customer-info">
                 <h2 className="section-title">お客様情報の入力</h2>
                 <form id="customer-info-form">
@@ -683,7 +785,7 @@ const Form = () => {
                   </div>
                 </form>
               </div>
-            )}
+            )} */}
           </div>
           <div id="preview-area" className="form-sub-container">
             <h2>お問い合わせ内容</h2>
@@ -700,7 +802,7 @@ const Form = () => {
             )}
             {inquiryContent && (
               <p id="preview-inquiry-content">
-                お問い合わせ内容：{inquiryContent}
+                お問い合わせ・ご相談内容：{inquiryContent}
               </p>
             )}
             <p id="preview-lot-number"></p>
