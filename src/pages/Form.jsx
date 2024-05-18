@@ -8,11 +8,14 @@ import axios from "axios";
 import { WP_API_BASE_URL } from "@/settings/wordPress";
 
 const Form = () => {
+  const numBoxes = 9; //ロットNo.の桁数
   const search = useLocation().search;
   const [activeSection, setActiveSection] = useState("");
   const [prevSection, setPrevSection] = useState("");
   const [formData, setFormData] = useState([]);
-  const [emailValidError, setEmailValidError] = useState("");
+  const [emailValidErrorText, setEmailValidErrorText] = useState("");
+  const [lotNumErrorText, setLotNumErrorText] = useState("");
+  const [inputs, setInputs] = useState(Array(numBoxes).fill(""));
 
   const { data } = useQuery({
     queryKey: ["form"],
@@ -404,9 +407,32 @@ const Form = () => {
       [item.formName]: email,
     });
     if (formData["メールアドレス"] != email) {
-      setEmailValidError("メールアドレスが一致しません。");
+      setEmailValidErrorText("メールアドレスが一致しません。");
     } else {
-      setEmailValidError("");
+      setEmailValidErrorText("");
+    }
+  };
+
+  const handleChangeLotNum = (item, e, index) => {
+    const value = e.target.value;
+    // バリデーション
+    const isAlphanumeric = /^[a-zA-Z0-9]*$/.test(value);
+    if (!isAlphanumeric) {
+      setLotNumErrorText("英数字のみ入力可能です");
+      return;
+    } else {
+      setLotNumErrorText("");
+    }
+
+    const newInputs = [...inputs];
+    newInputs[index] = value;
+    setInputs(newInputs);
+
+    setFormData({ ...formData, [item.formName]: newInputs.join("") });
+
+    // 次のボックスにフォーカスを移動
+    if (value && index < numBoxes - 1) {
+      document.getElementById(`input-${index + 1}`).focus();
     }
   };
 
@@ -590,8 +616,8 @@ const Form = () => {
                     handleChangeEmailValid(item, e.target.value)
                   }
                 ></input>
-                {emailValidError && (
-                  <span className="error-text">{emailValidError}</span>
+                {emailValidErrorText && (
+                  <span className="error-text">{emailValidErrorText}</span>
                 )}
               </div>
             </>
@@ -650,70 +676,30 @@ const Form = () => {
             <>
               <label>{item.label || ""}</label>
               <div className="input-group" id="otp-inputs" key={item.label}>
-                <input
-                  type="text"
-                  id="digit-1"
-                  name="digit-1"
-                  maxLength="1"
-                  required
-                />
-                <input
-                  type="text"
-                  id="digit-2"
-                  name="digit-2"
-                  maxLength="1"
-                  required
-                />
-                <input
-                  type="text"
-                  id="digit-3"
-                  name="digit-3"
-                  maxLength="1"
-                  required
-                />
-                <input
-                  type="text"
-                  id="digit-4"
-                  name="digit-4"
-                  maxLength="1"
-                  required
-                />
-                <input
-                  type="text"
-                  id="digit-5"
-                  name="digit-5"
-                  maxLength="1"
-                  required
-                />
-                <input
-                  type="text"
-                  id="digit-6"
-                  name="digit-6"
-                  maxLength="1"
-                  required
-                />
-                <input
-                  type="text"
-                  id="digit-7"
-                  name="digit-7"
-                  maxLength="1"
-                  required
-                />
-                <input
-                  type="text"
-                  id="digit-8"
-                  name="digit-8"
-                  maxLength="1"
-                  required
-                />
-                <input
-                  type="text"
-                  id="digit-9"
-                  name="digit-9"
-                  maxLength="1"
-                  required
-                />
+                {inputs.map((input, index) => (
+                  <input
+                    key={index}
+                    id={`input-${index}`}
+                    type="text"
+                    maxLength="1"
+                    value={input}
+                    onChange={(e) => handleChangeLotNum(item, e, index)}
+                    onFocus={(e) => e.target.select()}
+                    onKeyDown={(e) => {
+                      if (
+                        e.key === "Backspace" &&
+                        inputs[index] === "" &&
+                        index > 0
+                      ) {
+                        document.getElementById(`input-${index - 1}`).focus();
+                      }
+                    }}
+                  />
+                ))}
               </div>
+              {lotNumErrorText && (
+                <span className="error-text">{lotNumErrorText}</span>
+              )}
             </>
           );
         default:
