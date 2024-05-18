@@ -691,3 +691,9 @@ footer{
 .splide__arrow--prev {
     left: 0px !important;
 }
+
+/* 服部追加分 */
+.error-text {
+    color: red;
+    font-size: var(--text-xsmall);
+}

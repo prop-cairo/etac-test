@@ -12,11 +12,13 @@ const Form = () => {
   const [activeSection, setActiveSection] = useState("");
   const [prevSection, setPrevSection] = useState("");
   const [formData, setFormData] = useState([]);
+  const [emailValidError, setEmailValidError] = useState("");
 
   const { data } = useQuery({
     queryKey: ["form"],
     queryFn: async () => {
       const response = await axios.get(`${WP_API_BASE_URL}/wp-json/wp/v2/form`);
+      console.log(response.data[0].acf["personalInfo"]);
       return response.data;
     },
   });
@@ -396,6 +398,18 @@ const Form = () => {
     });
   }, []);
 
+  const handleChangeEmailValid = (item, email) => {
+    setFormData({
+      ...formData,
+      [item.formName]: email,
+    });
+    if (formData["メールアドレス"] != email) {
+      setEmailValidError("メールアドレスが一致しません。");
+    } else {
+      setEmailValidError("");
+    }
+  };
+
   const handleCategoryChange = (section) => {
     setPrevSection(activeSection);
     setActiveSection(section);
@@ -413,6 +427,7 @@ const Form = () => {
     }
     handleCategoryChange(item.nextField);
   };
+
   const renderFormLeft = () => {
     if (!data) {
       return;
@@ -456,6 +471,7 @@ const Form = () => {
   };
 
   const renderFormOptions = (obj) => {
+    console.log(obj);
     return Object.values(obj).map((item) => {
       switch (item.formType) {
         case "label":
@@ -491,7 +507,7 @@ const Form = () => {
               <button
                 id="next-textarea-button"
                 type="button"
-                onClick={() => handleCategoryChange(item)}
+                onClick={() => handleCategoryChange(item.nextField)}
               >
                 次へ
               </button>
@@ -517,7 +533,6 @@ const Form = () => {
                   value={formData[item.formName]}
                   style={{
                     backgroundColor: "white",
-                    margin: "20px auto",
                   }}
                   placeholder={`${
                     item.label ? item.label : item.nextField
@@ -530,6 +545,103 @@ const Form = () => {
                     })
                   }
                 ></input>
+              </div>
+            </>
+          );
+        case "input-email":
+          return (
+            <>
+              <label>{item.label || ""}</label>
+              <div className="input-group">
+                <input
+                  key={item.label}
+                  type="email"
+                  value={formData[item.formName]}
+                  style={{
+                    backgroundColor: "white",
+                  }}
+                  placeholder={`yourname@sample.com`}
+                  onChange={(e) =>
+                    item.formName &&
+                    setFormData({
+                      ...formData,
+                      [item.formName]: e.target.value,
+                    })
+                  }
+                ></input>
+              </div>
+            </>
+          );
+        case "input-email-valid":
+          return (
+            <>
+              <label>{item.label || ""}</label>
+              <div className="input-group">
+                <input
+                  key={item.label}
+                  type="email"
+                  value={formData[item.formName]}
+                  style={{
+                    backgroundColor: "white",
+                  }}
+                  placeholder={`yourname@sample.com`}
+                  onChange={(e) =>
+                    item.formName &&
+                    handleChangeEmailValid(item, e.target.value)
+                  }
+                ></input>
+                {emailValidError && (
+                  <span className="error-text">{emailValidError}</span>
+                )}
+              </div>
+            </>
+          );
+        case "input-tel":
+          return (
+            <>
+              <label>{item.label || ""}</label>
+              <div className="input-group">
+                <input
+                  key={item.label}
+                  type="tel"
+                  value={formData[item.formName]}
+                  style={{
+                    backgroundColor: "white",
+                  }}
+                  placeholder={`03-1234-5678`}
+                  onChange={(e) =>
+                    item.formName &&
+                    setFormData({
+                      ...formData,
+                      [item.formName]: e.target.value,
+                    })
+                  }
+                ></input>
+              </div>
+            </>
+          );
+        case "label-select":
+          return (
+            <>
+              <label>{item.label || ""}</label>
+              <div className="input-group">
+                {Object.values(item).map(
+                  (option) =>
+                    option.label && (
+                      <div
+                        key={option.label}
+                        className="card"
+                        onClick={() =>
+                          setFormData({
+                            ...formData,
+                            [option.formName]: option.label,
+                          })
+                        }
+                      >
+                        <label>{option.label}</label>
+                      </div>
+                    )
+                )}
               </div>
             </>
           );
