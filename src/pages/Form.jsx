@@ -446,6 +446,23 @@ const Form = () => {
     setPrevSection("");
   };
 
+  const goBackToTop = async () => {
+    setActiveSection("");
+    setPrevSection("");
+    if (data[0].acf) {
+      const newFormData = { ...formData };
+      Object.keys(newFormData).forEach((key) => {
+        newFormData[key] = "";
+      });
+      setFormData(newFormData);
+    }
+  };
+
+  const handleSubmit = async () => {
+    alert("入力内容を送信しました。");
+    // ここに送信処理を記載
+  };
+
   const handleClick = async (item) => {
     // setCurrentFormName(item.formName);
     if (item.formName) {
@@ -479,6 +496,37 @@ const Form = () => {
         <div className="form-block" id="target-product">
           <h2 className="section-title">対象製品を教えてください。</h2>
           {renderFormOptions(data[0].acf.targetProduct)}
+        </div>
+      );
+    } else if (activeSection === "personalInfo") {
+      return (
+        <div className="form-block" id="personal-info">
+          <h2 className="section-title">お客様情報の入力</h2>
+          {renderFormOptions(data[0].acf.personalInfo)}
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <button className="back-button" onClick={goBack}>
+              戻る
+            </button>
+            <button
+              className="back-button"
+              onClick={() => handleCategoryChange("form-end")}
+            >
+              進む
+            </button>
+          </div>
+        </div>
+      );
+    } else if (activeSection === "form-end") {
+      return (
+        <div className="form-block" id="form-end">
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <button className="back-button" onClick={goBack}>
+              戻る
+            </button>
+            <button className="back-button" onClick={goBackToTop}>
+              はじめから
+            </button>
+          </div>
         </div>
       );
     } else {
@@ -1020,6 +1068,11 @@ const Form = () => {
                   {key}：{value}
                 </p>
               ))}
+            {activeSection === "form-end" && (
+              <button id="submit-button" type="submit" onClick={handleSubmit}>
+                送信
+              </button>
+            )}
           </div>
         </div>
       </div>
